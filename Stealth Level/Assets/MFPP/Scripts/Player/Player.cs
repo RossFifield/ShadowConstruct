@@ -560,6 +560,7 @@ namespace MFPP
             }
         }
 
+        GameManager gameManager;
         private void Start()
         {
             CharacterController = GetComponent<CharacterController>();
@@ -579,6 +580,8 @@ namespace MFPP
 
             foreach (PlayerModule module in Modules.OrderBy(m => m.ExecutionOrder)) // Initialize modules
                 module.Initialize();
+
+            gameManager = GameObject.FindObjectOfType<GameManager>();
         }
 
         private void Update()
@@ -1164,6 +1167,15 @@ namespace MFPP
             CurrentHeight = Main.Height;
             CurrentCameraHeight = Main.CameraHeight;
             UpdateHeight();
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.transform.tag == "Blueprint")
+            {
+                Destroy(other.gameObject);
+                gameManager.PickupScore();
+            }
         }
 
         /// <summary>
