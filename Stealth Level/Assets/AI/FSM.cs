@@ -10,6 +10,11 @@ public class FSM
     public FSM(BaseAI agent)
     {
         this.agent = agent;
+
+        states.Add("Idle", new IdleState(agent));
+        states.Add("Search", new SearchState(agent));
+        states.Add("Alert", new AlertState(agent));
+
         currentState = states["Idle"];
         currentState.OnEnterState();
     }
@@ -24,7 +29,7 @@ public class FSM
     {
         foreach(StateTransition tran in currentState.transitions)
         {
-            if(tran.transitionCondition)
+            if(tran.transitionCondition.Invoke())
             {
                 currentState.OnExitState();
                 currentState = states[tran.targetState];
