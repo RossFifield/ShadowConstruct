@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 114400090705472168}
   - component: {fileID: 114964463929440048}
   - component: {fileID: 114997546448328542}
+  - component: {fileID: 2185831064514250817}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -295,6 +296,20 @@ MonoBehaviour:
   ClimbStepTimer: 1
   GrabForceMultiplier: 5
   GrabDuration: 0.5
+--- !u!136 &2185831064514250817
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648359132011738}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!1 &1681292830342284
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,13 +7,20 @@ public class FSM
     Dictionary<string, State> states;
     State currentState;
 
-    public FSM(BaseAI agent)
+    public FSM(BaseAI agent, GameManager manager)
     {
         this.agent = agent;
 
-        states.Add("Idle", new IdleState(agent));
-        states.Add("Search", new SearchState(agent));
-        states.Add("Alert", new AlertState(agent));
+        states = new Dictionary<string, State>();
+
+        State state = new IdleState(agent, manager);
+        states.Add("Idle", state);
+
+        state = new SearchState(agent, manager);
+        states.Add("Search", state);
+
+        state = new AlertState(agent, manager);
+        states.Add("Alert", state);
 
         currentState = states["Idle"];
         currentState.OnEnterState();
