@@ -75,8 +75,8 @@ public class BaseAI : MonoBehaviour
 
     public Vector3 GetRandomMove()
     {
-        float RandomX = Random.Range(startingPos.x, startingPos.x + moveRadius);
-        float RandomZ = Random.Range(startingPos.z, startingPos.z + moveRadius);
+        float RandomX = Random.Range(startingPos.x - moveRadius, startingPos.x + moveRadius);
+        float RandomZ = Random.Range(startingPos.z - moveRadius, startingPos.z + moveRadius);
 
         return new Vector3(RandomX, transform.position.y, RandomZ);
     }
