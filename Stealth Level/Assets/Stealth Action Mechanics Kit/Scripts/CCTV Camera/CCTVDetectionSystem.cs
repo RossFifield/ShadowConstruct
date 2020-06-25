@@ -28,8 +28,11 @@ public class CCTVDetectionSystem : MonoBehaviour {
 	public GameObject[] alarms;
 	private bool alarmActive;
 
+	GameManager gameManager;
+
 	void Start(){
 		player = GameObject.FindGameObjectWithTag (playerTag);
+		gameManager = GameObject.FindObjectOfType<GameManager>();
 	}
 
 	void Update()
@@ -84,6 +87,7 @@ public class CCTVDetectionSystem : MonoBehaviour {
 
 		if (detectionLevel == 1f && gameObject.GetComponent<CCTVController> ().isEnabled) 
 		{
+			gameManager.PlayerDetected();
 			foreach (GameObject alarm in alarms) 
 			{
 				alarm.GetComponent<AlarmLightController> ().ActivateAlarm();

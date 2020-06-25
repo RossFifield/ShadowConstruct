@@ -1176,6 +1176,11 @@ namespace MFPP
                 Destroy(other.gameObject);
                 gameManager.PickupScore();
             }
+
+            if(other.transform.tag == "Exit")
+            {
+                //Go to score
+            }
         }
 
         /// <summary>

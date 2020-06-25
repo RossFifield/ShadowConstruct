@@ -13,9 +13,12 @@ public class LaserController : MonoBehaviour {
 	public GameObject[] alarms;
 	private float beamBasicLength;
 
+	GameManager gameManager;
+
 	void Start()
 	{
 		BasicLength ();
+		gameManager = GameObject.FindObjectOfType<GameManager>();
 	}
 
 	void Update()
@@ -76,6 +79,8 @@ public class LaserController : MonoBehaviour {
 	//What if laser beam was interrupted by something
 	private void BeamInterruption()
 	{
+		gameManager.PlayerDetected();
+
 		foreach (GameObject alarm in alarms) 
 		{
 			alarm.GetComponent<AlarmLightController> ().ActivateAlarm();

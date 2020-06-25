@@ -13,10 +13,12 @@ public abstract class State : MonoBehaviour
 {
     protected BaseAI agent;
     public List<StateTransition> transitions;
+    protected GameManager gameManager;
 
     public State(BaseAI agent)
     {
         this.agent = agent;
+        gameManager = GameObject.FindObjectOfType<GameManager>();
     }
 
     public abstract void OnEnterState();
@@ -156,6 +158,7 @@ public class AlertState : State
         if(agent.SensePlayer())
         {
             agent.navMesh.destination = agent.player.transform.position;
+            gameManager.PlayerDetected();
         }
         else
         {

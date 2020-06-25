@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,12 +13,29 @@ public class GameManager : MonoBehaviour
     public int blueprintCountMin = 3;
 
     [SerializeField]
+    Slider detectionSlider;
+
+    [SerializeField]
+    float maxDetection = 100.0f;
+    float detectionMetreValue = 0.0f;
+    float detectionMetreMilestone = 0.0f;
+
+    [SerializeField]
     Transform[] blueprintSpawns;
+
     [SerializeField]
     GameObject blueprintPrefab;
 
     [SerializeField]
     GameObject[] guardSpawns;
+
+    [SerializeField]
+    Text timer;
+
+    [SerializeField]
+    Text score;
+
+    bool playerDetected = false;
 
     // Start is called before the first frame update
     void Start()
@@ -26,24 +44,67 @@ public class GameManager : MonoBehaviour
 
         for(int i = 0; i < blueprintCount; ++i)
         {
-            Instantiate(blueprintPrefab, blueprintSpawns[i]);
+            GameObject spawn = Instantiate(blueprintPrefab, blueprintSpawns[i]);
+            spawn.transform.position += spawn.transform.up;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentTime += Time.deltaTime;
-
-        if(currentTime >= timeMilestone + minute)
+        if(Input.GetKeyDown(KeyCode.Escape))
         {
-            timeMilestone = currentTime;
-            playerScore -= 10;
+            //Return to menu
         }
+
+        UpdateTimer();
+        score.text = "Score: " + playerScore.ToString();
+
+        if(!playerDetected)
+        {
+            detectionMetreValue = Mathf.Clamp(detectionMetreValue - Time.deltaTime * 5.0f, detectionMetreMilestone, maxDetection);
+        }
+
+        playerDetected = false;
     }
 
     public void PickupScore()
     {
         playerScore += 100;
+    }
+
+    public void PlayerDetected()
+    {
+        detectionMetreValue = Mathf.Clamp(detectionMetreValue + Time.deltaTime * 5.0F, detectionMetreMilestone, maxDetection);
+
+        detectionSlider.value = detectionMetreValue;
+
+        if (detectionMetreValue >= detectionMetreMilestone + 10.0f)
+        {
+            detectionMetreMilestone += 10.0f;
+        }
+
+        if(detectionMetreValue >= maxDetection)
+        {
+            //Go to game over
+        }
+
+        playerDetected = true;
+    }
+
+    void UpdateTimer()
+    {
+        currentTime += Time.deltaTime;
+
+        if (currentTime >= timeMilestone + minute)
+        {
+            timeMilestone = currentTime;
+            playerScore -= 10;
+        }
+
+        float time = currentTime;
+        string minutes = Mathf.Floor(time / 60.0f).ToString("00");
+        string seconds = (time % 60.0f).ToString("00");
+        timer.text = string.Format("{0}:{1}", minutes, seconds);
     }
 }
