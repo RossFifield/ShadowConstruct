@@ -9,16 +9,16 @@ public struct StateTransition
     public condition transitionCondition;
 }
 
-public abstract class State : MonoBehaviour
+public abstract class State
 {
     protected BaseAI agent;
-    public List<StateTransition> transitions;
+    public List<StateTransition> transitions = new List<StateTransition>();
     protected GameManager gameManager;
 
-    public State(BaseAI agent)
+    public State(BaseAI agent, GameManager manager)
     {
         this.agent = agent;
-        gameManager = GameObject.FindObjectOfType<GameManager>();
+        gameManager = manager;
     }
 
     public abstract void OnEnterState();
@@ -35,7 +35,7 @@ public class IdleState : State
     {
         return playerDetected;
     }
-    public IdleState(BaseAI agent) : base(agent)
+    public IdleState(BaseAI agent, GameManager manager) : base(agent, manager)
     {
         StateTransition tran = new StateTransition();
         tran.targetState = "Search";
@@ -45,7 +45,7 @@ public class IdleState : State
 
     public override void OnEnterState()
     {
-        agent.navMesh.destination = agent.patrolPoints[Random.Range(0, agent.patrolPoints.Length)].position;
+        agent.navMesh.destination = agent.startingPos;
         timer = 15.0f;
     }
 
@@ -65,8 +65,9 @@ public class IdleState : State
             if(timer <= 0)
             {
                 timer = 15.0f;
-                agent.navMesh.destination = agent.patrolPoints[Random.Range(0, agent.patrolPoints.Length)].position;
+                agent.navMesh.destination = agent.GetRandomMove();
             }
+
         }
     }
 }
@@ -75,6 +76,8 @@ public class SearchState : State
 {
     bool playerDetected = false;
     bool playerLost = false;
+
+    float timer = 1.0f;
 
     bool PlayerDetected()
     {
@@ -86,7 +89,7 @@ public class SearchState : State
         return playerLost;
     }
 
-    public SearchState(BaseAI agent) : base(agent)
+    public SearchState(BaseAI agent, GameManager manager) : base(agent, manager)
     {
         StateTransition tran = new StateTransition();
         tran.targetState = "Alert";
@@ -102,26 +105,28 @@ public class SearchState : State
     public override void OnEnterState()
     {
         agent.navMesh.destination = agent.player.transform.position;
+        timer = 1.0f;
     }
 
     public override void OnExitState()
     {
         playerDetected = false;
         playerLost = false;
+        timer = 1.0f;
     }
 
     public override void OnUpdateState()
     {
-        if(agent.transform.position == agent.navMesh.destination)
+        timer -= Time.deltaTime;
+        if (timer <= 0.0f)
         {
             if (agent.SensePlayer())
             {
-                RaycastHit hit;
-                Physics.Linecast(agent.transform.position, agent.player.transform.position, out hit);
-                if (hit.collider.gameObject == agent.player)
-                {
-                    playerDetected = true;
-                }
+                playerDetected = true;
+            }
+            else
+            {
+                playerLost = true;
             }
         }
     }
@@ -135,7 +140,7 @@ public class AlertState : State
     {
         return playerEscaped;
     }
-    public AlertState(BaseAI agent) : base(agent)
+    public AlertState(BaseAI agent, GameManager manager) : base(agent, manager)
     {
         StateTransition tran = new StateTransition();
         tran.targetState = "Search";
@@ -145,7 +150,6 @@ public class AlertState : State
 
     public override void OnEnterState()
     {
-       
     }
 
     public override void OnExitState()
@@ -155,12 +159,10 @@ public class AlertState : State
 
     public override void OnUpdateState()
     {
-        if(agent.SensePlayer())
-        {
-            agent.navMesh.destination = agent.player.transform.position;
-            gameManager.PlayerDetected();
-        }
-        else
+        agent.navMesh.destination = agent.player.transform.position;
+        gameManager.PlayerDetected();
+        
+        if(Vector3.Distance(agent.transform.position, agent.player.transform.position) > agent.visionRange)
         {
             playerEscaped = true;
         }
